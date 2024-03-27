@@ -1,42 +1,38 @@
-import React,{useState} from 'react'
-import { useDispatch } from 'react-redux';
-import { signInUser } from '../redux/authSlice';
+import React, { useState } from 'react';
+import axios from 'axios';
 
 const SignIn = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-    // const dispatch = useDispatch();
-
-    const handleLogin = (e) => {
-        // dispatch(signInUser({username,password}));
-        
-        fetch('https://dummyjson.com/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              
-              username: `${username}`,
-              password: `${password}`,
-            })
-          })
-          .then(res => res.json())
-          .then(console.log);
-
+  const handleSignIn = async () => {
+    try {
+      const response = await axios.post('https://dummyjson.com/auth/SignIn', { username, password });
+      const token = response.data.token;
+      console.log('SignIn successful. Token:', token);
+      // Handle storing token
+    } catch (error) {
+      console.error('SignIn failed:', error);
+      setError('Invalid username or password');
     }
+  };
+
   return (
+    <div>
+      <h2>SignIn</h2>
+      {error && <div>{error}</div>}
+      <div>
+        <label>Username:</label>
+        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+      </div>
+      <div>
+        <label>Password:</label>
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      </div>
+      <button onClick={handleSignIn}>SignIn</button>
+    </div>
+  );
+};
 
-        <>
-             <div className="flex flex-column align-items-center ">
-                <h3>Login</h3>
-                <label htmlFor="">Username : </label>
-                <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} /> <br/>
-                <label htmlFor="">Password : </label>
-                <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />  <br/>
-                <button onClick={handleLogin} className="mt-3" >Login</button>
-            </div>
-        </>
-    )
-}
-
-export default SignIn;
+export default SignIn;
